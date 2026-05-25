@@ -14,18 +14,18 @@ A Streamlit app that uses a trained LSTM model to predict the next word for a se
 
 ## Setup
 
-Use Python 3.11, 3.12, or 3.13. TensorFlow is not currently available for Python 3.14 in this environment.
+The deployed app runs with Streamlit and Python's standard library only.
 
 ```bash
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install streamlit
 ```
 
 ## Streamlit Community Cloud
 
-Community Cloud selects the Python version from the app deployment settings, not from `runtime.txt`. The app pins `tensorflow==2.20.0` because that release has Python 3.13 wheels and installs on current Community Cloud runtimes.
+Community Cloud is currently deploying this app with Python 3.14. TensorFlow does not provide Python 3.14 wheels, so the deployed app uses a lightweight dataset-backed n-gram predictor instead of installing TensorFlow.
 
 ## Run
 

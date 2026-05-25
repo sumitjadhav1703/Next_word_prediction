@@ -1,9 +1,13 @@
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+import csv
 import pickle
+import re
 from typing import Any
 
-import numpy as np
+
+WORD_RE = re.compile(r"[a-zA-Z']+")
 
 
 @dataclass(frozen=True)
@@ -12,16 +16,71 @@ class PredictionResult:
     probability: float
 
 
+class DatasetPredictor:
+    def __init__(self, transitions: dict[tuple[str, ...], Counter[str]]):
+        self.transitions = transitions
+
+    @classmethod
+    def from_csv(cls, dataset_path: str | Path) -> "DatasetPredictor":
+        with open(dataset_path, newline="", encoding="utf-8", errors="replace") as dataset_file:
+            rows = csv.DictReader(dataset_file)
+            return cls.from_texts(row["quote"] for row in rows if row.get("quote"))
+
+    @classmethod
+    def from_texts(cls, texts) -> "DatasetPredictor":
+        transitions: dict[tuple[str, ...], Counter[str]] = defaultdict(Counter)
+        for text in texts:
+            words = tokenize(text)
+            for position in range(1, len(words)):
+                next_word = words[position]
+                for context_size in range(1, min(5, position) + 1):
+                    context = tuple(words[position - context_size : position])
+                    transitions[context][next_word] += 1
+        return cls(dict(transitions))
+
+    def predict(self, text: str, top_k: int = 3) -> list[PredictionResult]:
+        words = tokenize(text)
+        if not words:
+            raise ValueError("Enter some text before predicting the next word.")
+
+        counter = self._counter_for_context(words)
+        if not counter:
+            return []
+
+        total = sum(counter.values())
+        return [
+            PredictionResult(word=word, probability=count / total)
+            for word, count in counter.most_common(top_k)
+        ]
+
+    def generate(self, seed_text: str, word_count: int = 5) -> str:
+        generated = seed_text.strip()
+        for _ in range(word_count):
+            predictions = self.predict(generated, top_k=1)
+            if not predictions:
+                break
+            generated = f"{generated} {predictions[0].word}".strip()
+        return generated
+
+    def _counter_for_context(self, words: list[str]) -> Counter[str]:
+        for context_size in range(min(5, len(words)), 0, -1):
+            context = tuple(words[-context_size:])
+            if context in self.transitions:
+                return self.transitions[context]
+        return Counter()
+
+
+def tokenize(text: str) -> list[str]:
+    return [match.group(0).lower().strip("'") for match in WORD_RE.finditer(text) if match.group(0).strip("'")]
+
+
 def index_word_lookup(tokenizer: Any) -> dict[int, str]:
     return {index: word for word, index in tokenizer.word_index.items()}
 
 
-def pad_sequence(sequence: list[int], max_len: int) -> np.ndarray:
-    padded = np.zeros((1, max_len), dtype=np.int32)
+def pad_sequence(sequence: list[int], max_len: int) -> list[list[int]]:
     trimmed = sequence[-max_len:]
-    if trimmed:
-        padded[0, -len(trimmed) :] = trimmed
-    return padded
+    return [[0] * (max_len - len(trimmed)) + trimmed]
 
 
 def predict_next_words(
@@ -37,10 +96,10 @@ def predict_next_words(
 
     sequence = tokenizer.texts_to_sequences([cleaned_text])[0]
     padded = pad_sequence(sequence, max_len=max_len)
-    predictions = np.asarray(model.predict(padded, verbose=0))[0]
+    predictions = list(model.predict(padded, verbose=0)[0])
     lookup = index_word_lookup(tokenizer)
 
-    ranked_indexes = np.argsort(predictions)[::-1]
+    ranked_indexes = sorted(range(len(predictions)), key=lambda index: predictions[index], reverse=True)
     results: list[PredictionResult] = []
     for token_index in ranked_indexes:
         word = lookup.get(int(token_index))

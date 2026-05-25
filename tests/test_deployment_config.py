@@ -6,22 +6,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class DeploymentConfigTests(unittest.TestCase):
-    def test_tensorflow_requirement_supports_streamlit_cloud_default_python(self):
-        requirements = (PROJECT_ROOT / "requirements.txt").read_text().splitlines()
-        tensorflow_lines = [line for line in requirements if line.startswith("tensorflow")]
+    def test_requirements_file_is_omitted_for_streamlit_cloud_python_314(self):
+        self.assertFalse((PROJECT_ROOT / "requirements.txt").exists())
 
-        self.assertEqual(len(tensorflow_lines), 1)
-        self.assertEqual(tensorflow_lines[0], "tensorflow==2.20.0")
+    def test_tensorflow_is_not_required_on_streamlit_cloud_python_314(self):
+        requirements = (PROJECT_ROOT / "requirements.txt")
+        self.assertFalse(requirements.exists())
 
     def test_runtime_txt_is_not_used_for_streamlit_cloud_python_selection(self):
         self.assertFalse((PROJECT_ROOT / "runtime.txt").exists())
 
-    def test_numpy_requirement_supports_python_313_wheels(self):
-        requirements = (PROJECT_ROOT / "requirements.txt").read_text().splitlines()
-        numpy_lines = [line for line in requirements if line.startswith("numpy")]
-
-        self.assertEqual(len(numpy_lines), 1)
-        self.assertEqual(numpy_lines[0], "numpy>=2.1,<2.3")
+    def test_numpy_is_not_required_for_cloud_fallback_predictor(self):
+        requirements = (PROJECT_ROOT / "requirements.txt")
+        self.assertFalse(requirements.exists())
 
 
 if __name__ == "__main__":

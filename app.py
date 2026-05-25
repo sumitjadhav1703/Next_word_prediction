@@ -3,13 +3,11 @@ from html import escape
 
 import streamlit as st
 
-from next_word_predictor import generate_text, load_artifacts, predict_next_words
+from next_word_predictor import DatasetPredictor
 
 
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "lstm_model.h5"
-TOKENIZER_PATH = BASE_DIR / "tokenizer.pkl"
-MAX_LEN_PATH = BASE_DIR / "max_len.pkl"
+DATASET_PATH = BASE_DIR / "qoute_dataset.csv"
 
 
 st.set_page_config(
@@ -21,7 +19,7 @@ st.set_page_config(
 
 @st.cache_resource(show_spinner=False)
 def load_resources():
-    return load_artifacts(MODEL_PATH, TOKENIZER_PATH, MAX_LEN_PATH)
+    return DatasetPredictor.from_csv(DATASET_PATH)
 
 
 st.markdown(
@@ -88,7 +86,7 @@ st.markdown(
     """
     <div class="hero">
         <h1>Next Word Prediction</h1>
-        <p>Type the start of a quote or sentence and the LSTM model will rank likely next words.</p>
+        <p>Type the start of a quote or sentence and the app will rank likely next words from the quote dataset.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -100,7 +98,6 @@ with st.sidebar:
     top_k = st.slider("Predictions", min_value=1, max_value=5, value=3)
     generated_words = st.slider("Generate words", min_value=1, max_value=12, value=5)
     st.divider()
-    st.caption("Model artifact: `lstm_model.h5`")
     st.caption("Dataset: `qoute_dataset.csv`")
 
 
@@ -124,15 +121,9 @@ predict_clicked = st.button("Predict", type="primary", use_container_width=True)
 if predict_clicked:
     try:
         with st.spinner("Loading model and predicting..."):
-            model, tokenizer, max_len = load_resources()
-            predictions = predict_next_words(model, tokenizer, user_input, max_len=max_len, top_k=top_k)
-            generated = generate_text(
-                model,
-                tokenizer,
-                user_input,
-                max_len=max_len,
-                word_count=generated_words,
-            )
+            predictor = load_resources()
+            predictions = predictor.predict(user_input, top_k=top_k)
+            generated = predictor.generate(user_input, word_count=generated_words)
 
         if not predictions:
             st.warning("The model could not produce a known next-word prediction for this input.")
@@ -155,5 +146,5 @@ if predict_clicked:
     except ValueError as error:
         st.warning(str(error))
     except Exception as error:
-        st.error("The model could not be loaded in this Python environment.")
+        st.error("The predictor could not be loaded in this Python environment.")
         st.caption(str(error))

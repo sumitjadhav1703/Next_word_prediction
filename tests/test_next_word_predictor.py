@@ -1,8 +1,11 @@
 import unittest
 
-import numpy as np
-
-from next_word_predictor import PredictionResult, index_word_lookup, predict_next_words
+from next_word_predictor import (
+    DatasetPredictor,
+    PredictionResult,
+    index_word_lookup,
+    predict_next_words,
+)
 
 
 class FakeTokenizer:
@@ -15,7 +18,7 @@ class FakeTokenizer:
 
 class FakeModel:
     def predict(self, sequence, verbose=0):
-        return np.array([[0.0, 0.1, 0.7, 0.2]])
+        return [[0.0, 0.1, 0.7, 0.2]]
 
 
 class PredictorTests(unittest.TestCase):
@@ -36,6 +39,30 @@ class PredictorTests(unittest.TestCase):
     def test_predict_next_words_rejects_blank_input(self):
         with self.assertRaisesRegex(ValueError, "Enter some text"):
             predict_next_words(FakeModel(), FakeTokenizer(), "   ", max_len=4)
+
+    def test_dataset_predictor_returns_next_words_from_quote_context(self):
+        predictor = DatasetPredictor.from_texts(
+            [
+                "the world as we know it",
+                "the world as we see it",
+                "the world as we know ourselves",
+            ]
+        )
+
+        results = predictor.predict("the world as we", top_k=2)
+
+        self.assertEqual(
+            results,
+            [
+                PredictionResult(word="know", probability=2 / 3),
+                PredictionResult(word="see", probability=1 / 3),
+            ],
+        )
+
+    def test_dataset_predictor_generates_continuation(self):
+        predictor = DatasetPredictor.from_texts(["the world as we know it"])
+
+        self.assertEqual(predictor.generate("the world as we", word_count=2), "the world as we know it")
 
 
 if __name__ == "__main__":
