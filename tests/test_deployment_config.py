@@ -16,6 +16,13 @@ class DeploymentConfigTests(unittest.TestCase):
     def test_runtime_txt_is_not_used_for_streamlit_cloud_python_selection(self):
         self.assertFalse((PROJECT_ROOT / "runtime.txt").exists())
 
+    def test_numpy_requirement_supports_python_313_wheels(self):
+        requirements = (PROJECT_ROOT / "requirements.txt").read_text().splitlines()
+        numpy_lines = [line for line in requirements if line.startswith("numpy")]
+
+        self.assertEqual(len(numpy_lines), 1)
+        self.assertEqual(numpy_lines[0], "numpy>=2.1,<2.3")
+
 
 if __name__ == "__main__":
     unittest.main()
