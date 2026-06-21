@@ -2,9 +2,23 @@
 
 A Streamlit web app that predicts likely next words from a sentence fragment using a quote dataset. The deployed version uses a lightweight n-gram predictor so it runs cleanly on Streamlit Community Cloud without TensorFlow installation issues.
 
+
+![Streamlit App Screenshot](assets/demo.png)
 ## Live App
 
 https://nextwordprediction-gj6q3h2okjbqevqbmzuw43.streamlit.app/
+
+
+## Dataset & Model
+
+- **Dataset Size:** 3,038 quotes
+- **Vocabulary Size:** 8,978 words
+- **Max Sequence Length:** 745
+- **LSTM Architecture:**
+  - Embedding Dimension: 50
+  - LSTM Units: 128
+  - Number of Layers: 1 LSTM layer, 1 Dense layer
+- **Training Metrics:** Not evaluated quantitatively; predictions assessed manually
 
 ## Features
 
