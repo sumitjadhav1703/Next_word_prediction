@@ -19,7 +19,6 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Demo](#demo)
-- [Screenshots](#screenshots)
 - [How It Works](#how-it-works)
 - [Model Architecture](#model-architecture)
 - [Dataset](#dataset)
@@ -92,18 +91,8 @@ Next-word prediction (often modeled via causal language modeling) allows models 
 
 Watch the interactive Next Word Prediction app in action:
 
-![Demo GIF](assets/demo.gif)
-
-*<a href="#">[Watch full demo video placeholder]</a>*
-
----
-
-## Screenshots
-
 <div align="center">
-  <img src="assets/home.png" alt="App Home Screen" width="45%">
-  &nbsp;
-  <img src="assets/predict.png" alt="Prediction Results" width="45%">
+  <img src="assets/demo.png" alt="App Demo" width="80%">
 </div>
 
 ---
