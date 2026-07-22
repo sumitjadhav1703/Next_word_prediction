@@ -1,8 +1,4 @@
 <div align="center">
-  <img src="assets/banner.png" alt="Project Banner" width="100%">
-
-  <img src="assets/logo.png" alt="Project Logo" width="150" height="150">
-
   # Next Word Prediction
 
   **A fast, lightweight, and interactive next-word prediction engine for quotes and text.**
