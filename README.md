@@ -1,6 +1,7 @@
 <div align="center">
-  # Next Word Prediction
-
+  
+  <h1>Next Word Prediction</h1>
+  
   **A fast, lightweight, and interactive next-word prediction engine for quotes and text.**
 
   This project provides a robust natural language processing pipeline that predicts the most likely subsequent words given a sentence fragment. It features a dual-model architecture: a deep learning LSTM model for rigorous training and a high-performance n-gram model tailored for seamless web deployment.
