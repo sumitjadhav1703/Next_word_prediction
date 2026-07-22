@@ -453,10 +453,10 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Author
 
-- **GitHub:** [@username](https://github.com/username)
-- **LinkedIn:** [Your Name](https://linkedin.com/in/username)
-- **Portfolio:** [Your Website](https://yourwebsite.com)
-- **Email:** you@example.com
+- **GitHub:** [https://github.com/sumitjadhav1703](https://github.com/username)
+- **LinkedIn:** [https://www.linkedin.com/in/sumit-jadhav-1703s/](https://linkedin.com/in/username)
+- **Portfolio:** [https://nextwordprediction-gj6q3h2okjbqevqbmzuw43.streamlit.app/](https://yourwebsite.com)
+- **Email:** jadhavsumit534@gmail.com
 
 ---
 
