@@ -325,9 +325,9 @@ predictions = predict_next_words(model, tokenizer, "the world as we", max_len)
 You can use the Streamlit app to explore these examples interactively:
 
 - **Input:** `"the world as we"`
-  - **Predicted:** `"know"`
+  - **Predicted:** `"have"`
 - **Input:** `"it is our choices"`
-  - **Predicted:** `"that"`
+  - **Predicted:** `"harry"`
 - **Input:** `"there are only two"`
   - **Predicted:** `"ways"`
 
